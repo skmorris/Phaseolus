@@ -16,3 +16,20 @@ Using the calculations in part (c), or additional calculations, address the ques
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+**(a)**
+
+We selected the species *Phaseoulus lunatus*, common name lima bean, in part because it is a food crop but also because of interesting features in the matrix. The matrix is for a wild population of lima bean that is threatened. This is a valuable genetic resource for biodiversity conservation and varietal improvement in other beans. Within the matrix, it is clear that lima beans have strong seed dormancy that enhance the fitness of the species.
+
+**(b)** 
+
+We thought it would be interesting to follow the trajectory of the associated paper and examine how seed dormancy impacts survival and growth. Specifically, if we decrease seed dormancy and increase seed germination, what happens to species survival in terms of the eigen value? In the matrix this would like increasing the rate at which individuals move from stage G~0~ to L~1~ and proportionally decreasing the number of individuals moving from G~0~ to G~1~. 
+
+
+**c** this is where we will input code
+```{r finding matrix}
+
+
+
+```
+
+**d**
