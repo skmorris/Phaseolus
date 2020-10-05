@@ -37,6 +37,8 @@ colnames(Phasmat) = c("G0", "G1", "J", "L1", "L2", "L3")
 
 Phasmat
 
+L <- Phasmat
+
 ```
 
 **d**
