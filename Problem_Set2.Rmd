@@ -28,7 +28,14 @@ We thought it would be interesting to follow the trajectory of the associated pa
 **c** this is where we will input code
 ```{r finding matrix}
 
+# creating the matrix
+data<- c(0,0.16,0.12,0.08,0,0,0,0,0.14,0.09,0,0,0,0,0,0.01,0,0,0.42,0,0,0.01,0.05,0,28.9,0,0,0,0.16,0.18,104,0,0,0,0,0.25)
 
+Phasmat<- matrix(data = data, nrow = 6, ncol =  6)
+
+colnames(Phasmat) = c("G0", "G1", "J", "L1", "L2", "L3")
+
+Phasmat
 
 ```
 
