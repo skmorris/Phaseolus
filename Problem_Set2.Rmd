@@ -5,6 +5,13 @@ date: "10/5/2020"
 output: html_document
 ---
 
+In teams of two, address the following questions:
+
+What species (and location if available) did you choose? Why did you choose the species?
+What question do you want to answer about this population (e.g. population status, best management strategies)?
+Calculate eigenvalue, stable age distribution, elasticity, and sensitivity. What does this tell you about the population?
+Using the calculations in part (c), or additional calculations, address the question you proposed in part (b).
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
