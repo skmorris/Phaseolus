@@ -70,10 +70,28 @@ Pop_time <- cbind(Pop_time, repeat_t)
 
 require(ggplot2)
 
-ggplot(data = Pop_time, aes(x = repeat_t, y = pop, colour = time)) + geom_point()
+ggplot(data = Pop_time, aes(x = repeat_t, y = pop, colour = time)) + geom_point(size = 3) + theme_bw() + geom_line() + ggtitle("Population Projection for Original Leslie Matrix", subtitle = "Phaseolus lunatus") +labs(x = "Time in Years", y = "Population size" )
+
+```
+Based on the above population projection it seems that at the present fecundity, survival, and growth rates all Lima bean life stages will decrease with time. G0 will see a slight increase due to high fecundity rates but will continue to drop as the number of reproductive lignified individuals (L1, L2, L3) declines.
+
+So why is this the case? What do the eigenvalues and vectors look like?
+
+```{r finding eigenvalues and vectors}
+install.packages("popbio")
+require(popbio)
+
+Lima_eigen <-eigen(L) # using eigen function to find vectors and values
+
+Lima_eigen
+
+elasticity(L)
+sensitivity(L)
+
 
 ```
 
+Note from bailey to sarah: Ok, so from here i think it is useful to maybe just change the matrix above like we talked about and then run the analysis again and make another graph to have a visual comparison. I am still kinda sure exactly how the sensitivity analysis/calculation works. Maybe need to spend more time with the site i sent you.. also unsure what the above outputs mean..
 
 
 **d**
