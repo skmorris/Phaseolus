@@ -26,19 +26,54 @@ We thought it would be interesting to follow the trajectory of the associated pa
 
 
 **c** this is where we will input code
-```{r finding matrix}
+```{r creating/finding matrix}
 
 # creating the matrix
-data<- c(0,0.16,0.12,0.08,0,0,0,0,0.14,0.09,0,0,0,0,0,0.01,0,0,0.42,0,0,0.01,0.05,0,28.9,0,0,0,0.16,0.18,104,0,0,0,0,0.25)
+data<- c(0,0.16,0.12,0.08,0,0,0,0,0.14,0.09,0,0,0,0,0,0.01,0,0,0.42,0,0,0.01,0.05,0,28.9,0,0,0,0.16,0.18,104,0,0,0,0,0.25) #data in matrix by column
 
-Phasmat<- matrix(data = data, nrow = 6, ncol =  6)
+Phasmat<- matrix(data = data, nrow = 6, ncol =  6) #creating matrix and inputting above data
 
-colnames(Phasmat) = c("G0", "G1", "J", "L1", "L2", "L3")
+colnames(Phasmat) = c("G0", "G1", "J", "L1", "L2", "L3") #assigning the life stage IDs to the column names
 
-Phasmat
+Phasmat #viewing matrix
 
-L <- Phasmat
+L <- Phasmat # reassigning matrix to object L for leslie matrix
 
 ```
+
+In lieu of extracting the matrix from the website, we created the matrix here.
+
+```{r projecting the population behavior}
+require(tidyr)
+t = 50 # setting time = to 50
+Nt = matrix(nrow = nrow(L), ncol = t+1 , data = 0) # creating an initial population matrix
+
+Nt[,1] = 50 #where all life stages are at size 50 in year 1
+Nt #checking Nt
+
+L # as defined above
+
+#for loop to determine the size of each life stage across 50 years
+for (i in 1:t)
+{
+	Nt[, i + 1] <- L %*% Nt[,i]
+}
+
+Pop <- t(Nt)
+
+time =c(1:51)
+Pop_time <- as.data.frame(cbind(Pop, time))
+colnames(Pop_time) = c("G0", "G1", "J", "L1", "L2", "L3", "time")
+Pop_time <- gather(Pop_time, key = "time", value = "pop")
+repeat_t =c(c(1:51),c(1:51),c(1:51),c(1:51),c(1:51),c(1:51))
+Pop_time <- cbind(Pop_time, repeat_t)
+
+require(ggplot2)
+
+ggplot(data = Pop_time, aes(x = repeat_t, y = pop, colour = time)) + geom_point()
+
+```
+
+
 
 **d**
