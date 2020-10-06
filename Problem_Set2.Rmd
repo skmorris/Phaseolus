@@ -1,6 +1,6 @@
 ---
-title: "Problem Set 2"
-author: "Bailey Kretzler"
+title: "Problem Set 3"
+author: "Bailey Kretzler & Sarah Morris"
 date: "10/5/2020"
 output: html_document
 ---
