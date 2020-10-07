@@ -28,10 +28,17 @@ Within the matrix, it is clear that lima beans have strong seed dormancy. Theref
 **c** To calculate summary statistics about the population, first we need to load it into R and visualize it:
 ```{r creating/finding matrix}
 
-# creating the matrix
-data<- c(0,0.16,0.12,0.08,0,0,0,0,0.14,0.09,0,0,0,0,0,0.01,0,0,0.42,0,0,0.01,0.05,0,28.9,0,0,0,0.16,0.18,104,0,0,0,0,0.25) #data in matrix by column
+#alt way to load matrix
+grep(pattern = 'Phaseolus', compadre$metadata$Genus)
+compadre$metadata$Genus[5735]
+compadre$mat[5735][[1]]$matA
 
-Phasmat<- matrix(data = data, nrow = 6, ncol =  6) #creating matrix and inputting above data
+Phasmat <- compadre$mat[5735][[1]]$matA
+
+# creating the matrix
+#data<- c(0,0.16,0.12,0.08,0,0,0,0,0.14,0.09,0,0,0,0,0,0.01,0,0,0.42,0,0,0.01,0.05,0,28.9,0,0,0,0.16,0.18,104,0,0,0,0,0.25) #data in matrix by column
+
+#Phasmat<- matrix(data = data, nrow = 6, ncol =  6) #creating matrix and inputting above data
 
 colnames(Phasmat) = c("G0", "G1", "J", "L1", "L2", "L3") #assigning the life stage IDs to the column names
 
