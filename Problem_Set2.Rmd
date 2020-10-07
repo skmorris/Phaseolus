@@ -18,14 +18,14 @@ knitr::opts_chunk$set(echo = TRUE)
 
 **(a)**
 
-We selected the species *Phaseoulus lunatus*, common name lima bean, in part because it is a food crop but also because of interesting features in the matrix. The matrix is for a wild population of lima bean that is threatened. This is a valuable genetic resource for biodiversity conservation and varietal improvement in other beans. Within the matrix, it is clear that lima beans have strong seed dormancy that enhance the fitness of the species.
+We selected the species *Phaseoulus lunatus*, commonly known as lima bean, in part because it is a food crop but also because of interesting features in the matrix. The matrix describes a threatened wild population of lima bean in Costa Rica. This population is a valuable genetic resource for biodiversity conservation and varietal improvement in other beans. 
 
 **(b)** 
 
-We thought it would be interesting to follow the trajectory of the associated paper and examine how seed dormancy impacts survival and growth. Specifically, if we decrease seed dormancy and increase seed germination, what happens to species survival in terms of the eigen value? In the matrix this would like increasing the rate at which individuals move from stage G~0~ to L~1~ and proportionally decreasing the number of individuals moving from G~0~ to G~1~. 
+Within the matrix, it is clear that lima beans have strong seed dormancy. Therefore, it would be interesting to follow the trajectory of the associated paper and examine how seed dormancy impacts survival and growth. Specifically, if we decrease seed dormancy and increase seed germination, what happens to species survival in terms of the eigen value? These changes would be reflected in the matrix by increasing the rate at which individuals move from stage G~0~ to L~1~ and proportionally decreasing the number of individuals moving from G~0~ to G~1~. 
 
 
-**c** this is where we will input code
+**c** To calculate summary statistics about the population, first we need to load it into R and visualize it:
 ```{r creating/finding matrix}
 
 # creating the matrix
@@ -45,8 +45,9 @@ In lieu of extracting the matrix from the website, we created the matrix here.
 
 ```{r projecting the population behavior}
 require(tidyr)
-t = 50 # setting time = to 50
+t = 30 # setting time = to 30
 Nt = matrix(nrow = nrow(L), ncol = t+1 , data = 0) # creating an initial population matrix
+
 
 Nt[,1] = 50 #where all life stages are at size 50 in year 1
 Nt #checking Nt
@@ -61,11 +62,11 @@ for (i in 1:t)
 
 Pop <- t(Nt)
 
-time =c(1:51)
+time =c(1:31)
 Pop_time <- as.data.frame(cbind(Pop, time))
 colnames(Pop_time) = c("G0", "G1", "J", "L1", "L2", "L3", "time")
 Pop_time <- gather(Pop_time, key = "time", value = "pop")
-repeat_t =c(c(1:51),c(1:51),c(1:51),c(1:51),c(1:51),c(1:51))
+repeat_t =c(c(1:31),c(1:31),c(1:31),c(1:31),c(1:31),c(1:31))
 Pop_time <- cbind(Pop_time, repeat_t)
 
 require(ggplot2)
@@ -78,7 +79,7 @@ Based on the above population projection it seems that at the present fecundity,
 So why is this the case? What do the eigenvalues and vectors look like?
 
 ```{r finding eigenvalues and vectors}
-install.packages("popbio")
+
 require(popbio)
 
 Lima_eigen <-eigen(L) # using eigen function to find vectors and values
@@ -88,10 +89,14 @@ Lima_eigen
 elasticity(L)
 sensitivity(L)
 
+#our numbers are slightly different from paper - why?
+eigen.analysis(L) #another way to visualize the eigen value, eigen vector, sensitivity matrix & elasticity matrix
 
 ```
+The eigen value of 0.7675902 indicates that the population is declining (because it's less than 1). The right eigenvector, or stable stage distribution indicates .... The sensitivity matrix indicates ... The elasticity matrix indicates ... 
 
-Note from bailey to sarah: Ok, so from here i think it is useful to maybe just change the matrix above like we talked about and then run the analysis again and make another graph to have a visual comparison. I am still kinda sure exactly how the sensitivity analysis/calculation works. Maybe need to spend more time with the site i sent you.. also unsure what the above outputs mean..
+
+Note from bailey to sarah: Ok, so from here i think it is useful to maybe just change the matrix above like we talked about and then run the analysis again and make another graph to have a visual comparison. I am still kinda sure exactly how the sensitivity analysis/calculation works. Maybe need to spend more time with the site i sent you.. also unsure what the above outputs mean..I agree!
 
 
 **d**
