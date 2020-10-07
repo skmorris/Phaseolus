@@ -89,12 +89,12 @@ So why is this the case? What do the eigenvalues and vectors look like?
 
 require(popbio)
 
-Lima_eigen <-eigen(L) # using eigen function to find vectors and values
+#Lima_eigen <-eigen(L) # using eigen function to find vectors and values
 
-Lima_eigen
+#Lima_eigen
 
-elasticity(L)
-sensitivity(L)
+#elasticity(L)
+#sensitivity(L)
 
 #our numbers are slightly different from paper - why?
 eigen.analysis(L) #another way to visualize the eigen value, eigen vector, sensitivity matrix & elasticity matrix
