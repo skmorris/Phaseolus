@@ -90,14 +90,23 @@ So why is this the case? What do the eigenvalues and vectors look like?
 require(popbio)
 
 #our numbers are slightly different from paper - why?
-eigen.analysis(L) #another way to visualize the eigen value, eigen vector, sensitivity matrix & elasticity matrix
+eigen1 = eigen.analysis(L)
+
+eigen1$lambda1 #eigenvalue
+eigen1$stable.stage #stable stage distribution
+eigen1$sensitivities #sensitivity matrix
+eigen1$elasticities #elasticity matrix
+
+eigen1$sensitivities[4,1] #sensitivity of G0 to L1
+eigen1$sensitivities[1,4:6] #sensitivity for fecundity values of L1 to L3
+eigen1$sensitivities[2,1] #sensitivity of G0 to G1
 
 ```
-The eigen value of 0.7675902 indicates that the population is in exponential decay (because it's less than 1). The right eigenvector, or stable stage distribution indicates .... The sensitivity matrix indicates ... The elasticity matrix indicates ... 
+The eigen value of 0.7675902 indicates that the population is in exponential decay (because it's less than 1). The right eigenvector, or stable stage distribution which is proportional here, indicates that at a stable state the majority of individuals will exist in stage G0, followed by G1, and J. The least number of individuals will be in the lignified stages. It is possible this is a result of high fecundity. The sensitivity matrix indicates that, given we are only looking at realistic examples, that increasing the rate of individuals moving from G0 to L1 will have the greatest impact on the eigenvalue. Specifically, for every unit increase in G0 to L1, the eigenvalue will change by 1.83299099. The rate of growing from G0 to G1 has some impact on the eigenvalue but much less, with the rate of growing from G0 to J being even lower. Additionally, changes in fecundity rates of life stages L1 - L3 will have a much lower impact on the eigenvalue. The elasticity matrix indicates the movement from G0 to L1 has the greatest proportional impact on the eigenvalue. Specifically every unit change in G0 to L1, the eigen value changes by 19%. (??????? is this correct?)
 
 
 
-From here we would like to know how the stable age distribution, eigenvalues, eigen vectors and sensitivity/elasticity changes if we increase the rate of individuals moving from G0 to L1 and decrease the number of individuals movin from G0 to G1. To do this we will lower the G0 - G1 value by 0.08 and raise the G0 - L1 value by 0.08 and subsequently reexamine the populations behavior.
+From here we would like to know how the stable age distribution, eigenvalues, eigenvectors and sensitivity/elasticity changes if we increase the rate of individuals moving from G0 to L1 and decrease the number of individuals moving from G0 to G1. To do this we will lower the G0 - G1 value by 0.08 and raise the G0 - L1 value by 0.08 and subsequently reexamine the populations behavior.
 
 ```{r creating new matrix}
 
@@ -154,61 +163,32 @@ eigen.analysis(L2)
 
 
 ```
-How does this look if we take this further and decrease the value of G0 to G1 to 0.01 and the value of G0 to L1 to 0.23?
-```{r creating second new matrix}
-
-
-Phasmat3 <- compadre$mat[5735][[1]]$matA
-
-Phasmat3[2,1] = 0.01 #changing G0 to G1 value to 0.08
-Phasmat3[4,1] = 0.23 #changing G0 to L1 value to 0.16
-
-colnames(Phasmat3) = c("G0", "G1", "J", "L1", "L2", "L3") #assigning the life stage IDs to the column names
-
-Phasmat3 #viewing matrix
-
-L3 <- Phasmat3 # reassigning matrix to object L for leslie matrix
-
-```
-
-Above we again redefine the matrix and assign it a new name. Now let's examine how the population looks over time.
+How does this look if we take this further and decrease the value of G0 to G1 to 0.01 and the value of G0 to L1 to 0.23? We can use iteration to examine how the relative change in these rates impacts the eigenvalue.
 
 ```{r projecting the new population behavior}
-t = 30 # setting time = to 30
-Nt3 = matrix(nrow = nrow(L2), ncol = t+1 , data = 0) # creating an initial population matrix
 
+G0L1 = seq(from =  0.08 , to = 0.23, by = 0.01)
+G0G1 = seq(from = 0.16, to = 0.01, by = -0.01)
+length(G0L1) == length(G0G1)
+eigenmat = matrix(data = 0, nrow = length(G0L1), ncol = 1)# creating an initial population matrix
 
-Nt3[,1] = 50 #where all life stages are at size 50 in year 1
-Nt3 #checking Nt
-
-L3 # as defined above
-
-#for loop to determine the size of each life stage across 50 years
-for (i in 1:t)
-{
-	Nt3[, i + 1] <- L2 %*% Nt3[,i]
+for (i in 1:length(G0L1)) { # for length of sequence
+  L[2,1] = G0G1[i] #make G0to G1 in L matrix equal to the i position in the corresponding vector
+  L[4,1] = G0L1[i] #make G0to L1 in L matrix equal to the i position in the corresponding vector
+  eigenmat[i,] = eigen.analysis(L)$lambda1 #extract eigenvalues
 }
+print(eigenmat)
 
-Pop3 <- t(Nt3)
+G1_L1 = G0L1/G0G1
+eigendf = as.data.frame(eigenmat) # make data frame
+eigendf = cbind(eigendf, G1_L1) # bind corresponding values
 
-time =c(1:31)
-Pop_time3 <- as.data.frame(cbind(Pop3, time))
-colnames(Pop_time3) = c("G0", "G1", "J", "L1", "L2", "L3", "time")
-Pop_time3 <- gather(Pop_time3, key = "time", value = "pop")
-repeat_t3 =c(c(1:31),c(1:31),c(1:31),c(1:31),c(1:31),c(1:31))
-Pop_time3 <- cbind(Pop_time3, repeat_t3)
+ggplot(data = eigendf, aes(x = G1_L1, y = V1)) + geom_point(size = 3) + theme_bw() + geom_line() + ggtitle("Imapact of proportional change of G0 to L1 and G0 to G1 \ngrowth rates on Eigenvalue", subtitle = "Phaseolus lunatus") +labs(x = "Ratio of Growth Rates (G0L1/G0G1)", y = "Eigenvalue" )
 
-
-ggplot(data = Pop_time3, aes(x = repeat_t2, y = pop, colour = time)) + geom_point(size = 3) + theme_bw() + geom_line() + ggtitle("Population Projection for Adjusted Leslie Matrix", subtitle = "Phaseolus lunatus") +labs(x = "Time in Years", y = "Population size" ) +scale_color_discrete(name = "Life Stage")
-
-```
-It still seems that the population is declining at an even slower than L2. How is this reflected in the parameters?
-
-```{r calculating new eigenvectors/values}
-
-eigen.analysis(L3) 
 
 
 ```
-Here we see the eigenvalue beginning to approach 1 but still in the exponential decay category.
-**d**
+
+Here it is clear that as the ratio of the G0L1 growth rate to the G0G1 growth rate increases, so does the eigenvalue. The eigenvalue begins to approach 1 and the rate of exponential decay slows. While this would prolong the species survival, it does not prevent populations from dropping toward 0 (extinction). The growth rate of G1 to L1 would have to increase even further. This increase could be the result of decreased death rate instead on decreased growth from G0 to G1.
+
+**(d)**
