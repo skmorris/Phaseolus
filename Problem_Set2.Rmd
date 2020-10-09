@@ -28,17 +28,13 @@ Within the matrix, it is clear that lima beans have strong seed dormancy. Theref
 **c** To calculate summary statistics about the population, first we need to load it into R and visualize it:
 ```{r creating/finding matrix}
 
+
 #alt way to load matrix
 grep(pattern = 'Phaseolus', compadre$metadata$Genus)
 compadre$metadata$Genus[5735]
 compadre$mat[5735][[1]]$matA
 
 Phasmat <- compadre$mat[5735][[1]]$matA
-
-# creating the matrix
-#data<- c(0,0.16,0.12,0.08,0,0,0,0,0.14,0.09,0,0,0,0,0,0.01,0,0,0.42,0,0,0.01,0.05,0,28.9,0,0,0,0.16,0.18,104,0,0,0,0,0.25) #data in matrix by column
-
-#Phasmat<- matrix(data = data, nrow = 6, ncol =  6) #creating matrix and inputting above data
 
 colnames(Phasmat) = c("G0", "G1", "J", "L1", "L2", "L3") #assigning the life stage IDs to the column names
 
@@ -47,8 +43,6 @@ Phasmat #viewing matrix
 L <- Phasmat # reassigning matrix to object L for leslie matrix
 
 ```
-
-In lieu of extracting the matrix from the website, we created the matrix here.
 
 ```{r projecting the population behavior}
 require(tidyr)
@@ -89,7 +83,6 @@ So why is this the case? What do the eigenvalues and vectors look like?
 
 require(popbio)
 
-#our numbers are slightly different from paper - why?
 eigen1 = eigen.analysis(L)
 
 eigen1$lambda1 #eigenvalue
@@ -102,10 +95,9 @@ eigen1$sensitivities[1,4:6] #sensitivity for fecundity values of L1 to L3
 eigen1$sensitivities[2,1] #sensitivity of G0 to G1
 
 ```
-The eigen value of 0.7675902 indicates that the population is in exponential decay (because it's less than 1). The right eigenvector, or stable stage distribution which is proportional here, indicates that at a stable state the majority of individuals will exist in stage G0, followed by G1, and J. The least number of individuals will be in the lignified stages. It is possible this is a result of high fecundity. The sensitivity matrix indicates that, given we are only looking at realistic examples, that increasing the rate of individuals moving from G0 to L1 will have the greatest impact on the eigenvalue. Specifically, for every unit increase in G0 to L1, the eigenvalue will change by 1.83299099. The rate of growing from G0 to G1 has some impact on the eigenvalue but much less, with the rate of growing from G0 to J being even lower. Additionally, changes in fecundity rates of life stages L1 - L3 will have a much lower impact on the eigenvalue. The elasticity matrix indicates the movement from G0 to L1 has the greatest proportional impact on the eigenvalue. Specifically every unit change in G0 to L1, the eigen value changes by 19%. (??????? is this correct?)
-
-
-
+The eigen value of 0.7675902 indicates that the population is in exponential decay (because it's less than 1). The right eigenvector, or stable stage distribution which is proportional here, indicates that at a stable state the majority of individuals will exist in stage G0, followed by G1, and J. The least number of individuals will be in the lignified stages. It is possible this is a result of high fecundity. The sensitivity matrix indicates that, given we are only looking at realistic examples, increasing the rate of individuals moving from G0 to L1 will have the greatest impact on the eigenvalue. Specifically, for every unit increase in G0 to L1, the eigenvalue will change by 1.83299099. The rate of growing from G0 to G1 has some impact on the eigenvalue but much less, with the rate of growing from G0 to J being even lower. Additionally, changes in fecundity rates for life stages L1 - L3 will have a much lower impact on the eigenvalue. The elasticity matrix indicates the movement from G0 to L1 has one of the greatest proportional impacts on the eigenvalue with 19% of the growth rate contributed to this transition (the greatest impact on the growth rate is the transition from L1 to L2 with 22% of the growth rate contributed to that transition).  
+  
+**d**    
 From here we would like to know how the stable age distribution, eigenvalues, eigenvectors and sensitivity/elasticity changes if we increase the rate of individuals moving from G0 to L1 and decrease the number of individuals moving from G0 to G1. To do this we will lower the G0 - G1 value by 0.08 and raise the G0 - L1 value by 0.08 and subsequently reexamine the populations behavior.
 
 ```{r creating new matrix}
@@ -165,7 +157,7 @@ eigen.analysis(L2)
 ```
 How does this look if we take this further and decrease the value of G0 to G1 to 0.01 and the value of G0 to L1 to 0.23? We can use iteration to examine how the relative change in these rates impacts the eigenvalue.
 
-```{r projecting the new population behavior}
+```{r projecting the newer population behavior}
 
 G0L1 = seq(from =  0.08 , to = 0.23, by = 0.01)
 G0G1 = seq(from = 0.16, to = 0.01, by = -0.01)
@@ -183,12 +175,13 @@ G1_L1 = G0L1/G0G1
 eigendf = as.data.frame(eigenmat) # make data frame
 eigendf = cbind(eigendf, G1_L1) # bind corresponding values
 
-ggplot(data = eigendf, aes(x = G1_L1, y = V1)) + geom_point(size = 3) + theme_bw() + geom_line() + ggtitle("Imapact of proportional change of G0 to L1 and G0 to G1 \ngrowth rates on Eigenvalue", subtitle = "Phaseolus lunatus") +labs(x = "Ratio of Growth Rates (G0L1/G0G1)", y = "Eigenvalue" )
+#library(mdthemes)
+
+ggplot(data = eigendf, aes(x = G1_L1, y = V1)) + geom_point(size = 3) + theme_bw() + geom_line() + mdthemes::md_theme_classic() + ggtitle("Imapact of proportional change of G0 to L1 and G0 to G1  
+                                                                                                                                          growth rates on Eigenvalue", subtitle = "*Phaseolus lunatus*") +labs(x = "Ratio of Growth Rates (G0 to L1)/(G0 to G1)", y = "Eigenvalue" )
 
 
 
 ```
 
-Here it is clear that as the ratio of the G0L1 growth rate to the G0G1 growth rate increases, so does the eigenvalue. The eigenvalue begins to approach 1 and the rate of exponential decay slows. While this would prolong the species survival, it does not prevent populations from dropping toward 0 (extinction). The growth rate of G1 to L1 would have to increase even further. This increase could be the result of decreased death rate instead on decreased growth from G0 to G1.
-
-**(d)**
+Here it is clear that as the ratio of the G0-L1 growth rate to the G0-G1 growth rate increases, so does the eigenvalue. The eigenvalue begins to approach 1 and the rate of exponential decay slows. While this would prolong the species survival, it does not prevent populations from dropping toward 0 (extinction). The growth rate of G0 to L1 would have to increase even further to prevent extinction. Perhaps decreasing the death rate - which was 64% in the original matrix - of G0 individuals could achieve a higher growth rate from G0 to L1 and therefore prevent the decline and eventual extinction of this population. 
